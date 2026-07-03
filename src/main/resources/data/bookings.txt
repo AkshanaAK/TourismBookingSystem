@@ -1,0 +1,14 @@
+B1001,P1000,,Bali Paradise Escape,Bali - Indonesia,899,Resort,6,2026-06-08 14:09:50
+B1002,P1006,,Seoul Explorer,South Korea,500,Hotel,7,2026-06-08 14:46:55
+B1003,P1005,,Santorini Island Getaway,Santorini - Greece,1199,Hotel,7,2026-06-08 15:42:07
+B1004,P1004,,Safari Adventure Kenya,Nairobi - Kenya,1799,Hotel,7,2026-06-10 11:17:40
+B1005,P1001,,Paris Romance Package,Paris - France,1299,Hotel,7,2026-06-10 11:23:59
+B1008,P1000,A1000,Bali Paradise Escape,Bali - Indonesia,899,Hotel,7,2026-06-20 22:21:06,Cancelled
+B1009,P1005,A1000,Santorini Island Getaway,Santorini - Greece,1199,Hotel,7,2026-06-20 22:21:39,Cancelled
+B1010,P1000,C1000,Bali Paradise Escape,Bali - Indonesia,899,Hotel,7,2026-06-20 22:21:58,Cancelled
+B1011,P1002,C1000,Maldives Luxury Retreat,Maldives,2499,Hotel,7,2026-06-20 22:22:01,Cancelled
+B1012,P1004,C1000,Safari Adventure Kenya,Nairobi - Kenya,1799,Hotel,7,2026-06-20 23:15:32,Cancelled
+B1013,P1003,C1000,Tokyo Cultural Tour,Tokyo - Japan,1099,Hotel,7,2026-06-20 23:15:44,Cancelled
+B1014,P1004,C1000,Safari Adventure Kenya,Nairobi - Kenya,1799,Hotel,7,2026-06-20 23:15:53,Confirmed
+B1015,P1000,A1000,Bali Paradise Escape,Bali - Indonesia,899,Hotel,7,2026-06-20 23:26:54,Cancelled
+B1016,P1000,A1000,Bali Paradise Escape,Bali - Indonesia,899,Hotel,7,2026-06-20 23:27:22,Confirmed

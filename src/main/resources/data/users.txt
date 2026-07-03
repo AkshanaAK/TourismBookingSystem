@@ -1,0 +1,2 @@
+C1000,customer,Mr.,Karthi,Raveendran,Karthy,Sri Lanka,0741234567,karthi123@gmail.com,Karthi28
+A1000,admin,Mr.,Dilrukshi,Vijey,Dilu,Sri Lanka,0741234567,dilu@gmail.com,dilu59

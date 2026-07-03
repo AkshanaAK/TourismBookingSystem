@@ -1,0 +1,6 @@
+P1000,Bali Paradise Escape,Bali - Indonesia,899,7 Days,Enjoy stunning rice terraces and beautiful temples in the Island of Gods. Includes hotel and guided tours.
+P1001,Paris Romance Package,Paris - France,1299,5 Days,Experience the city of love with Eiffel Tower visit, Seine River cruise, and fine French dining.
+P1002,Maldives Luxury Retreat,Maldives,2499,6 Days,Overwater bungalows, crystal clear lagoons, and world-class snorkeling in a tropical paradise.
+P1003,Tokyo Cultural Tour,Tokyo - Japan,1099,8 Days,Explore ancient temples, futuristic technology, and mouth-watering cuisine in the heart of Japan.
+P1004,Safari Adventure Kenya,Nairobi - Kenya,1799,7 Days,Witness the Great Migration and spot the Big Five on an unforgettable African safari experience.
+P1005,Santorini Island Getaway,Santorini - Greece,1199,5 Days,Blue-domed churches, volcanic beaches, and breathtaking sunsets in the Aegean Sea.
