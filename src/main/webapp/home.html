@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Tourism Booking</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .home-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(6px);
+        }
+
+        .nav-logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: Arial;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.15s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .nav-btn-outline {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.6);
+        }
+
+        .nav-btn-outline:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-1px);
+        }
+
+        .nav-btn-profile {
+            background: rgba(255,255,255,0.85);
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: auto;
+            margin-top: 0;
+        }
+
+        .nav-btn-profile:hover {
+            background: white;
+            transform: translateY(-1px);
+        }
+
+        .avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #378ADD;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .home-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 80px 20px 40px;
+        }
+
+        .welcome-card {
+            width: 500px;
+            max-width: 95vw;
+            padding: 40px 36px;
+            background: rgba(255,255,255,0.85);
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0px 0px 20px gray;
+            margin-bottom: 28px;
+        }
+
+        .welcome-card h1 {
+            font-size: 1.8rem;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .welcome-card h1 span { color: #185FA5; }
+
+        .welcome-card p {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .explore-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 0;
+            background: #185FA5;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: Arial;
+            font-size: 1rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        .explore-btn:hover {
+            background: #0C447C;
+            transform: translateY(-2px);
+        }
+
+        .quotes-row {
+            display: flex;
+            gap: 16px;
+            max-width: 860px;
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .quote-card {
+            flex: 1;
+            min-width: 220px;
+            max-width: 260px;
+            padding: 20px;
+            background: rgba(255,255,255,0.75);
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .quote-mark {
+            font-size: 2.5rem;
+            color: #185FA5;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .quote-text {
+            font-size: 0.82rem;
+            color: #333;
+            line-height: 1.6;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .quote-author {
+            font-size: 0.72rem;
+            color: #185FA5;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="home-nav">
+    <div class="nav-logo">✈ Travel World</div>
+    <div class="nav-buttons">
+        <button class="nav-btn nav-btn-outline" onclick="goToDashboard()">Dashboard</button>
+        <a href="feedback.html" class="nav-btn nav-btn-outline">Feedback</a>
+        <a href="Profile.html" class="nav-btn nav-btn-profile">
+            <div class="avatar" id="avatarInitials">JD</div>
+            <span id="navUsername">Profile</span>
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="home-wrapper">
+
+    <div class="welcome-card">
+        <h1>Welcome, <span id="welcomeName">Traveller</span> ✈️</h1>
+        <p>
+            The world is waiting for you.<br>
+            Discover breathtaking destinations and create memories that last a lifetime.
+        </p>
+        <!-- 👇 UPDATED: calls goToDashboard() instead of dashboard.html -->
+        <button class="explore-btn" onclick="goToDashboard()">
+            🌍 Start Exploring
+        </button>
+    </div>
+
+    <div class="quotes-row">
+        <div class="quote-card">
+            <div class="quote-mark">"</div>
+            <p class="quote-text">The world is a book, and those who do not travel read only one page.</p>
+            <p class="quote-author">— Saint Augustine</p>
+        </div>
+        <div class="quote-card">
+            <div class="quote-mark">"</div>
+            <p class="quote-text">Travel is the only thing you buy that makes you richer.</p>
+            <p class="quote-author">— Anonymous</p>
+        </div>
+        <div class="quote-card">
+            <div class="quote-mark">"</div>
+            <p class="quote-text">To travel is to live. Adventure awaits those brave enough to seek it.</p>
+            <p class="quote-author">— H.C. Andersen</p>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get('username');
+    const role = params.get('role');
+    const userId   = params.get('userId');
+
+    if (username) {
+        document.getElementById('welcomeName').textContent = username;
+        document.getElementById('navUsername').textContent = username;
+        document.getElementById('avatarInitials').textContent = username.substring(0, 2).toUpperCase();
+        sessionStorage.setItem('username', username);
+    } else {
+        const saved = sessionStorage.getItem('username');
+        if (saved) {
+            document.getElementById('welcomeName').textContent = saved;
+            document.getElementById('navUsername').textContent = saved;
+            document.getElementById('avatarInitials').textContent = saved.substring(0, 2).toUpperCase();
+        }
+    }
+
+    if (role) sessionStorage.setItem('role', role);
+
+    if (userId) sessionStorage.setItem('userId',userId);
+
+    // 👇 NEW: redirect to correct dashboard based on role
+    function goToDashboard() {
+        const savedRole = sessionStorage.getItem('role');
+        if (savedRole === 'admin') {
+            window.location.href = 'admin-dashboard.html';
+        } else {
+            window.location.href = 'customer-dashboard.html';
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Travel World</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .feedback-nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 28px; background: rgba(255,255,255,0.18); backdrop-filter: blur(6px);
+        }
+        .nav-logo { font-size: 1.2rem; font-weight: bold; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.4); letter-spacing: 1px; }
+        .nav-buttons { display: flex; gap: 10px; align-items: center; }
+        .nav-btn {
+            padding: 8px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-family: Arial; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; display: inline-block; margin-top: 0; width: auto; transition: background 0.2s;
+        }
+        .nav-btn-outline { background: rgba(255,255,255,0.25); color: white; border: 1.5px solid rgba(255,255,255,0.6); }
+        .nav-btn-outline:hover { background: rgba(255,255,255,0.4); }
+
+        .feedback-wrapper {
+            min-height: 100vh;
+            padding: 110px 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .msg-success {
+            display: none; width: 100%; max-width: 560px;
+            padding: 14px 16px; background: rgba(212,237,218,0.95); color: #155724;
+            border: 1px solid #c3e6cb; border-radius: 10px; text-align: center; font-weight: bold; font-size: 0.95rem;
+        }
+
+        /* SUBMIT FORM CARD */
+        .feedback-card {
+            width: 100%; max-width: 560px;
+            background: rgba(255,255,255,0.88);
+            border-radius: 20px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .feedback-header { background: #185FA5; padding: 24px; text-align: center; color: white; }
+        .feedback-header h2 { font-size: 1.3rem; margin-bottom: 4px; }
+        .feedback-header p  { font-size: 0.85rem; opacity: 0.85; }
+        .feedback-body { padding: 24px; }
+
+        .star-section { margin-bottom: 20px; }
+        .star-section label { display: block; font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .stars { display: flex; gap: 8px; justify-content: center; }
+        .star { font-size: 2.2rem; cursor: pointer; color: #ddd; transition: color 0.15s, transform 0.15s; user-select: none; }
+        .star:hover, .star.active { color: #f5c518; transform: scale(1.15); }
+        .rating-text { text-align: center; font-size: 0.85rem; color: #185FA5; font-weight: bold; margin-top: 8px; min-height: 20px; }
+
+        .comment-section { margin-bottom: 20px; }
+        .comment-section label { display: block; font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        .comment-section textarea {
+            width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px;
+            font-family: Arial; font-size: 0.9rem; resize: vertical; min-height: 120px; box-sizing: border-box; transition: border-color 0.2s;
+        }
+        .comment-section textarea:focus { outline: none; border-color: #185FA5; }
+        .char-count { text-align: right; font-size: 0.75rem; color: #aaa; margin-top: 4px; }
+
+        .submit-btn {
+            width: 100%; padding: 13px; background: #185FA5; color: white; border: none;
+            border-radius: 10px; cursor: pointer; font-family: Arial; font-size: 1rem; font-weight: bold;
+            transition: background 0.2s, transform 0.15s; margin-top: 0;
+        }
+        .submit-btn:hover { background: #0C447C; transform: translateY(-1px); }
+
+        .user-info-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; margin-bottom: 20px; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #185FA5; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; }
+        .user-info-text { font-size: 0.85rem; color: #555; }
+        .user-info-text strong { color: #1a1a2e; }
+
+        /* PUBLIC WALL */
+        .wall-section {
+            width: 100%; max-width: 560px;
+            background: rgba(255,255,255,0.88);
+            border-radius: 20px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+            padding: 24px;
+        }
+        .wall-section h3 { color: #0C447C; font-size: 1.1rem; margin-bottom: 16px; }
+
+        .wall-item {
+            background: #f8fafc;
+            border: 1px solid #e6edf5;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .wall-item:last-child { margin-bottom: 0; }
+        .wall-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .wall-user { display: flex; align-items: center; gap: 8px; }
+        .wall-avatar {
+            width: 28px; height: 28px; border-radius: 50%; background: #378ADD; color: white;
+            display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold;
+        }
+        .wall-username { font-size: 0.85rem; font-weight: bold; color: #1a1a2e; }
+        .wall-date { font-size: 0.7rem; color: #999; }
+        .wall-stars { color: #f5c518; font-size: 0.9rem; margin-bottom: 6px; }
+        .wall-comment { font-size: 0.85rem; color: #444; line-height: 1.5; margin-bottom: 4px; }
+
+        .wall-reply {
+            margin-top: 10px;
+            margin-left: 16px;
+            padding: 10px 12px;
+            background: #e9f2fb;
+            border-left: 3px solid #185FA5;
+            border-radius: 8px;
+        }
+        .wall-reply-label { font-size: 0.7rem; font-weight: bold; color: #185FA5; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        .wall-reply-text { font-size: 0.82rem; color: #333; }
+
+        .no-feedback { text-align: center; color: #999; padding: 20px; font-size: 0.88rem; }
+    </style>
+</head>
+<body>
+
+<nav class="feedback-nav">
+    <div class="nav-logo">✈ Travel World</div>
+    <div class="nav-buttons">
+        <button class="nav-btn nav-btn-outline" onclick="goBack()">← Back</button>
+        <button class="nav-btn nav-btn-outline" onclick="goToDashboard()">Dashboard</button>
+    </div>
+</nav>
+
+<div class="feedback-wrapper">
+
+    <div class="msg-success" id="successMsg">🎉 Thank you for your feedback! Your response has been recorded.</div>
+
+    <!-- SUBMIT FORM -->
+    <div class="feedback-card">
+        <div class="feedback-header">
+            <h2>💬 Share Your Feedback</h2>
+            <p>Help us improve your travel experience</p>
+        </div>
+        <div class="feedback-body">
+            <div class="user-info-row">
+                <div class="user-avatar" id="userAvatar">TW</div>
+                <div class="user-info-text">Submitting as <strong id="displayUsername">Guest</strong></div>
+            </div>
+
+            <form id="feedbackForm" action="feedback" method="post">
+                <input type="hidden" name="userId"   id="hiddenUserId">
+                <input type="hidden" name="username" id="hiddenUsername">
+                <input type="hidden" name="rating"   id="hiddenRating" value="0">
+
+                <div class="star-section">
+                    <label>Your Rating</label>
+                    <div class="stars" id="starsContainer">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <div class="rating-text" id="ratingText">Click a star to rate</div>
+                </div>
+
+                <div class="comment-section">
+                    <label>Your Comment</label>
+                    <textarea name="comment" id="commentBox" placeholder="Tell us about your experience with Travel World..." maxlength="500" oninput="updateCharCount()"></textarea>
+                    <div class="char-count"><span id="charCount">0</span>/500</div>
+                </div>
+
+                <button type="submit" class="submit-btn" onclick="return validateFeedback()">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PUBLIC FEEDBACK WALL -->
+    <div class="wall-section">
+        <h3>🗣️ What travellers are saying</h3>
+        <div id="wallList">
+            <div class="no-feedback">Loading feedback...</div>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    const params   = new URLSearchParams(window.location.search);
+    const username = sessionStorage.getItem('username') || 'Guest';
+    const userId   = sessionStorage.getItem('userId')   || '';
+
+    document.getElementById('displayUsername').textContent = username;
+    document.getElementById('userAvatar').textContent = username.substring(0, 2).toUpperCase();
+    document.getElementById('hiddenUserId').value   = userId;
+    document.getElementById('hiddenUsername').value = username;
+
+    if (params.get('status') === 'submitted') {
+        const m = document.getElementById('successMsg');
+        m.style.display = 'block';
+        setTimeout(() => m.style.display = 'none', 4000);
+    }
+
+    const stars = document.querySelectorAll('.star');
+    const ratingLabels = ['', 'Poor 😞', 'Fair 😐', 'Good 🙂', 'Very Good 😊', 'Excellent 🌟'];
+    let selectedRating = 0;
+
+    stars.forEach(star => {
+        star.addEventListener('mouseover', () => highlightStars(star.dataset.value));
+        star.addEventListener('mouseout', () => highlightStars(selectedRating));
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.dataset.value);
+            document.getElementById('hiddenRating').value = selectedRating;
+            document.getElementById('ratingText').textContent = ratingLabels[selectedRating];
+            highlightStars(selectedRating);
+        });
+    });
+
+    function highlightStars(value) {
+        stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.value) <= value));
+    }
+
+    function updateCharCount() {
+        document.getElementById('charCount').textContent = document.getElementById('commentBox').value.length;
+    }
+
+    function validateFeedback() {
+        if (selectedRating === 0) { alert('Please select a star rating before submitting!'); return false; }
+        if (!document.getElementById('commentBox').value.trim()) { alert('Please write a comment before submitting!'); return false; }
+        return true;
+    }
+
+    // LOAD PUBLIC FEEDBACK WALL
+    function loadWall() {
+        fetch('feedback')
+            .then(res => res.json())
+            .then(items => {
+                const wall = document.getElementById('wallList');
+                if (items.length === 0) {
+                    wall.innerHTML = '<div class="no-feedback">No feedback yet. Be the first to share! 💬</div>';
+                    return;
+                }
+                wall.innerHTML = '';
+                // newest first
+                items.slice().reverse().forEach(f => {
+                    const stars = '★'.repeat(parseInt(f.rating)) + '☆'.repeat(5 - parseInt(f.rating));
+                    let replyHtml = '';
+                    if (f.adminReply && f.adminReply.trim() !== '') {
+                        replyHtml = `
+                            <div class="wall-reply">
+                                <div class="wall-reply-label">🛡️ Travel World Team replied</div>
+                                <div class="wall-reply-text">${f.adminReply}</div>
+                            </div>`;
+                    }
+                    wall.innerHTML += `
+                        <div class="wall-item">
+                            <div class="wall-item-header">
+                                <div class="wall-user">
+                                    <div class="wall-avatar">${f.username.substring(0,2).toUpperCase()}</div>
+                                    <span class="wall-username">${f.username}</span>
+                                </div>
+                                <span class="wall-date">${f.dateTime}</span>
+                            </div>
+                            <div class="wall-stars">${stars}</div>
+                            <div class="wall-comment">${f.comment}</div>
+                            ${replyHtml}
+                        </div>`;
+                });
+            })
+            .catch(() => {
+                document.getElementById('wallList').innerHTML = '<div class="no-feedback">Could not load feedback.</div>';
+            });
+    }
+    loadWall();
+
+    function goToDashboard() {
+        const role = sessionStorage.getItem('role');
+        window.location.href = role === 'admin' ? 'admin-dashboard.html' : 'customer-dashboard.html';
+    }
+    function goBack() { window.history.back(); }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - Travel World</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .dashboard-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 28px; background: rgba(255,255,255,0.18); backdrop-filter: blur(6px);
+    }
+    .nav-logo { font-size: 1.2rem; font-weight: bold; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+    .nav-buttons { display: flex; gap: 10px; align-items: center; }
+    .nav-btn {
+      padding: 8px 18px; border: none; border-radius: 10px; cursor: pointer;
+      font-family: Arial; font-size: 0.85rem; font-weight: 600;
+      text-decoration: none; display: inline-block; margin-top: 0; width: auto; transition: background 0.2s;
+    }
+    .nav-btn-outline { background: rgba(255,255,255,0.25); color: white; border: 1.5px solid rgba(255,255,255,0.6); }
+    .nav-btn-outline:hover { background: rgba(255,255,255,0.4); }
+    .nav-btn-profile { background: rgba(255,255,255,0.85); color: #333; }
+    .nav-btn-profile:hover { background: white; }
+    .avatar {
+      display: inline-block; width: 24px; height: 24px; border-radius: 50%;
+      background: #185FA5; color: white; text-align: center; line-height: 24px;
+      font-size: 0.7rem; font-weight: bold; margin-right: 4px;
+    }
+
+    .dashboard-wrapper {
+      min-height: 100vh; padding: 200px 24px 40px;
+      display: flex; flex-direction: column; align-items: center; gap: 24px;
+    }
+
+    .tabs {
+      display: flex; gap: 8px; background: rgba(255,255,255,0.2);
+      padding: 6px; border-radius: 12px; width: 100%; max-width: 900px;
+      box-sizing: border-box; margin-bottom: 8px;
+    }
+    .tab-btn {
+      padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer;
+      font-family: Arial; font-size: 0.88rem; font-weight: 600;
+      background: transparent; color: white; transition: background 0.2s;
+      margin-top: 0; width: auto; flex: 1;
+    }
+    .tab-btn.active { background: white; color: #185FA5; }
+    .tab-btn:hover:not(.active) { background: rgba(255,255,255,0.2); }
+
+    .msg {
+      display: none; width: 100%; max-width: 900px; padding: 12px 16px;
+      border-radius: 10px; text-align: center; font-weight: bold; font-size: 0.95rem;
+    }
+    .msg-success { background: rgba(212,237,218,0.92); color: #155724; border: 1px solid #c3e6cb; }
+
+    .panel { display: none; width: 100%; max-width: 900px; }
+    .panel.active { display: block; }
+
+    .admin-card {
+      background: rgba(255,255,255,0.88); border-radius: 16px; padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15); margin-bottom: 20px;
+    }
+    .admin-card h3 { color: #0C447C; margin-bottom: 16px; font-size: 1.1rem; }
+
+    .add-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .add-form input, .add-form textarea {
+      padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;
+      font-family: Arial; font-size: 0.9rem; width: 100%; box-sizing: border-box;
+    }
+    .add-form textarea { grid-column: span 2; resize: vertical; height: 70px; }
+    .add-form button {
+      grid-column: span 2; padding: 12px; background: #185FA5; color: white;
+      border: none; border-radius: 8px; cursor: pointer; font-family: Arial;
+      font-weight: bold; font-size: 0.95rem; margin-top: 0; transition: background 0.2s;
+    }
+    .add-form button:hover { background: #0C447C; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th { background: #185FA5; color: white; padding: 9px 8px; text-align: left; white-space: nowrap; }
+    td { padding: 8px 8px; border-bottom: 1px solid #eee; color: #333; }
+    tr:hover td { background: #f0f6ff; }
+
+    .delete-btn, .book-btn-small, .reply-btn {
+      padding: 5px 10px; border: none; border-radius: 6px; cursor: pointer;
+      font-size: 0.75rem; font-family: Arial; margin-top: 0; width: auto; margin-right: 4px;
+      white-space: nowrap;
+    }
+    .delete-btn { background: #dc3545; color: white; }
+    .delete-btn:hover { background: #b02a37; }
+    .book-btn-small { background: #185FA5; color: white; }
+    .book-btn-small:hover { background: #0C447C; }
+    .reply-btn { background: #28a745; color: white; }
+    .reply-btn:hover { background: #1e7e34; }
+
+    .empty-row td { text-align: center; color: #999; padding: 24px; }
+
+    .stars-display { color: #f5c518; font-size: 1rem; }
+
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      display: inline-block;
+    }
+    .status-confirmed { background: #d4edda; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      z-index: 200; align-items: center; justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 16px; padding: 28px; max-width: 400px; width: 90%; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    .modal h3 { color: #0C447C; margin-bottom: 6px; }
+    .modal p  { color: #555; font-size: 0.88rem; margin-bottom: 16px; }
+    .modal-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .modal-form label { font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px; }
+    .modal-form select, .modal-form input, .modal-form textarea {
+      width: 100%; padding: 9px 12px; border: 1.5px solid #ddd; border-radius: 8px;
+      font-family: Arial; font-size: 0.9rem; box-sizing: border-box;
+    }
+    .modal-form textarea { resize: vertical; min-height: 80px; }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-family: Arial; font-weight: bold; font-size: 0.9rem; margin-top: 0; }
+    .modal-confirm { background: #185FA5; color: white; }
+    .modal-confirm:hover { background: #0C447C; }
+    .modal-cancel { background: #f0f0f0; color: #333; }
+    .modal-cancel:hover { background: #ddd; }
+  </style>
+</head>
+<body>
+
+<nav class="dashboard-nav">
+  <div class="nav-logo">Travel World — Admin</div>
+  <div class="nav-buttons">
+    <a href="home.html" class="nav-btn nav-btn-outline">Home</a>
+    <a href="feedback.html" class="nav-btn nav-btn-outline">Feedback</a>
+    <a href="Profile.html" class="nav-btn nav-btn-profile">
+      <span class="avatar" id="avatarInitials">AD</span>
+      <span id="navUsername">Admin</span>
+    </a>
+  </div>
+</nav>
+
+<!-- BOOK PACKAGE MODAL (admin booking) -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <h3>Book Package</h3>
+    <p id="modalText">Fill in booking details below.</p>
+    <div class="modal-form">
+      <div>
+        <label>Accommodation</label>
+        <select id="modalAccommodation">
+          <option value="Hotel">Hotel</option>
+          <option value="Resort">Resort</option>
+          <option value="Villa">Villa</option>
+          <option value="Hostel">Hostel</option>
+          <option value="Camping">Camping</option>
+        </select>
+      </div>
+      <div>
+        <label>Number of Days</label>
+        <input type="number" id="modalDays" min="1" max="365" value="7">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-cancel" onclick="closeBookingModal()">Cancel</button>
+      <button class="modal-btn modal-confirm" onclick="confirmAdminBooking()">Book Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPLY TO FEEDBACK MODAL -->
+<div class="modal-overlay" id="replyModal">
+  <div class="modal">
+    <h3>Reply to Feedback</h3>
+    <p id="replyModalText"></p>
+    <div class="modal-form">
+      <div>
+        <label>Your Reply</label>
+        <textarea id="replyText" placeholder="Type your response..."></textarea>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn modal-cancel" onclick="closeReplyModal()">Cancel</button>
+      <button class="modal-btn modal-confirm" onclick="confirmReply()">Send Reply</button>
+    </div>
+  </div>
+</div>
+
+<div class="dashboard-wrapper">
+
+  <div class="msg msg-success" id="successMsg">Package added successfully!</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('packages', this)">Packages</button>
+    <button class="tab-btn" onclick="showTab('bookings', this)">Bookings</button>
+    <button class="tab-btn" onclick="showTab('users', this)">Users</button>
+    <button class="tab-btn" onclick="showTab('feedback', this)">Feedback</button>
+  </div>
+
+  <!-- PACKAGES PANEL -->
+  <div class="panel active" id="panel-packages">
+    <div class="admin-card">
+      <h3>Add New Package</h3>
+      <form class="add-form" action="packages" method="post">
+        <input name="packageName" placeholder="Package Name" required>
+        <input name="destination" placeholder="Destination" required>
+        <input name="price"       placeholder="Price (USD)" required>
+        <input name="duration"    placeholder="Duration (e.g. 5 Days)" required>
+        <textarea name="description" placeholder="Description" required></textarea>
+        <button type="submit">Add Package</button>
+      </form>
+    </div>
+
+    <div class="admin-card">
+      <h3>All Packages</h3>
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>Destination</th><th>Price</th><th>Duration</th><th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="packagesTable">
+        <tr class="empty-row"><td colspan="6">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- BOOKINGS PANEL -->
+  <div class="panel" id="panel-bookings">
+    <div class="admin-card">
+      <h3>All Bookings</h3>
+      <table>
+        <thead>
+        <tr>
+          <th>Booking ID</th><th>User ID</th><th>User Name</th><th>Package</th>
+          <th>Destination</th><th>Price</th><th>Accommodation</th><th>Days</th><th>Date & Time</th><th>Status</th>
+        </tr>
+        </thead>
+        <tbody id="bookingsTable">
+        <tr class="empty-row"><td colspan="10">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- USERS PANEL -->
+  <div class="panel" id="panel-users">
+    <div class="admin-card">
+      <h3>All Users</h3>
+      <table>
+        <thead>
+        <tr><th>User ID</th><th>Role</th><th>Name</th><th>Username</th><th>Email</th><th>Country</th><th>Mobile</th></tr>
+        </thead>
+        <tbody id="usersTable">
+        <tr class="empty-row"><td colspan="7">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FEEDBACK PANEL -->
+  <div class="panel" id="panel-feedback">
+    <div class="admin-card">
+      <h3>Customer Feedback</h3>
+      <table>
+        <thead>
+        <tr><th>User ID</th><th>Username</th><th>Rating</th><th>Comment</th><th>Reply</th><th>Date & Time</th><th>Action</th></tr>
+        </thead>
+        <tbody id="feedbackTable">
+        <tr class="empty-row"><td colspan="7">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/app.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const username = params.get('username') || sessionStorage.getItem('username') || 'Admin';
+  sessionStorage.setItem('username', username);
+  document.getElementById('navUsername').textContent = username;
+  document.getElementById('avatarInitials').textContent = username.substring(0,2).toUpperCase();
+
+  if (params.get('status') === 'packageAdded') {
+    const msg = document.getElementById('successMsg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 3000);
+  }
+
+  function showTab(tab, btn) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + tab).classList.add('active');
+    btn.classList.add('active');
+
+    if (tab === 'bookings') loadBookings();
+    if (tab === 'users')    loadUsers();
+    if (tab === 'feedback') loadFeedback();
+  }
+
+  // LOAD PACKAGES (with Book button added)
+  function loadPackages() {
+    fetch('packages')
+            .then(res => res.json())
+            .then(packages => {
+              const tbody = document.getElementById('packagesTable');
+              if (packages.length === 0) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No packages yet.</td></tr>';
+                return;
+              }
+              tbody.innerHTML = '';
+              packages.forEach(pkg => {
+                tbody.innerHTML += `
+            <tr>
+                <td>${pkg.packageId}</td>
+                <td>${pkg.packageName}</td>
+                <td>${pkg.destination}</td>
+                <td>$${pkg.price}</td>
+                <td>${pkg.duration}</td>
+                <td>
+                    <button class="book-btn-small" onclick="openBookingModal('${pkg.packageId}','${pkg.packageName}')">Book</button>
+                    <button class="delete-btn" onclick="deletePackage('${pkg.packageId}', this)">Delete</button>
+                </td>
+            </tr>`;
+              });
+            });
+  }
+  loadPackages();
+
+  // LOAD BOOKINGS
+  function loadBookings() {
+    fetch('bookings')
+            .then(res => res.json())
+            .then(bookings => {
+              const tbody = document.getElementById('bookingsTable');
+              if (bookings.length === 0) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="10">No bookings yet.</td></tr>';
+                return;
+              }
+              tbody.innerHTML = '';
+              bookings.forEach(b => {
+                const statusClass = b.status === 'Cancelled' ? 'status-cancelled' : 'status-confirmed';
+                tbody.innerHTML += `
+            <tr>
+                <td>${b.bookingId}</td><td>${b.userId}</td><td>${b.userName || '—'}</td>
+                <td>${b.packageName}</td><td>${b.destination}</td><td>$${b.price}</td>
+                <td>${b.accommodation}</td><td>${b.days} days</td><td>${b.dateTime}</td>
+                <td><span class="status-badge ${statusClass}">${b.status}</span></td>
+            </tr>`;
+              });
+            });
+  }
+
+  // LOAD USERS
+  function loadUsers() {
+    fetch('users-list')
+            .then(res => res.json())
+            .then(users => {
+              const tbody = document.getElementById('usersTable');
+              if (users.length === 0) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No users yet.</td></tr>';
+                return;
+              }
+              tbody.innerHTML = '';
+              users.forEach(u => {
+                tbody.innerHTML += `
+            <tr>
+                <td>${u.userId}</td><td>${u.role}</td><td>${u.firstName} ${u.lastName}</td>
+                <td>${u.username}</td><td>${u.email}</td><td>${u.country}</td><td>${u.mobile}</td>
+            </tr>`;
+              });
+            });
+  }
+
+  // LOAD FEEDBACK (with Reply button)
+  function loadFeedback() {
+    fetch('feedback')
+            .then(res => res.json())
+            .then(items => {
+              const tbody = document.getElementById('feedbackTable');
+              if (items.length === 0) {
+                tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No feedback yet.</td></tr>';
+                return;
+              }
+              tbody.innerHTML = '';
+              items.forEach(f => {
+                const stars = '★'.repeat(parseInt(f.rating)) + '☆'.repeat(5 - parseInt(f.rating));
+                const replyDisplay = f.adminReply && f.adminReply.trim() !== ''
+                        ? f.adminReply
+                        : '<em style="color:#999;">No reply</em>';
+                tbody.innerHTML += `
+            <tr>
+                <td>${f.userId}</td>
+                <td>${f.username}</td>
+                <td><span class="stars-display">${stars}</span></td>
+                <td>${f.comment}</td>
+                <td>${replyDisplay}</td>
+                <td>${f.dateTime}</td>
+                <td><button class="reply-btn" onclick="openReplyModal('${f.feedbackId}','${f.username}','${(f.comment || '').replace(/'/g, "\\'")}')">Reply</button></td>
+            </tr>`;
+              });
+            })
+            .catch(() => {
+              document.getElementById('feedbackTable').innerHTML =
+                      '<tr class="empty-row"><td colspan="7">Could not load feedback.</td></tr>';
+            });
+  }
+
+  // DELETE PACKAGE
+  function deletePackage(packageId, btn) {
+    if (!confirm('Delete this package?')) return;
+    fetch('packages?packageId=' + packageId, { method: 'DELETE' })
+            .then(() => btn.closest('tr').remove());
+  }
+
+  // ADMIN BOOK PACKAGE
+  let selectedPackageId = '', selectedPackageName = '';
+
+  function openBookingModal(packageId, packageName) {
+    selectedPackageId = packageId; selectedPackageName = packageName;
+    document.getElementById('modalText').textContent = `Booking: "${packageName}" for yourself (Admin)`;
+    document.getElementById('bookingModal').classList.add('active');
+  }
+  function closeBookingModal() { document.getElementById('bookingModal').classList.remove('active'); }
+
+  function confirmAdminBooking() {
+    const uid = sessionStorage.getItem('userId') || '';
+    const accommodation = document.getElementById('modalAccommodation').value;
+    const days = document.getElementById('modalDays').value;
+    if (!days || days < 1) { alert('Please enter a valid number of days.'); return; }
+    closeBookingModal();
+
+    const form = document.createElement('form');
+    form.method = 'POST'; form.action = 'bookings';
+    const fields = { packageId: selectedPackageId, userId: uid, accommodation, days };
+    for (const [name, value] of Object.entries(fields)) {
+      const input = document.createElement('input');
+      input.name = name; input.value = value; form.appendChild(input);
+    }
+    document.body.appendChild(form); form.submit();
+  }
+
+  // ADMIN REPLY TO FEEDBACK
+  let replyFeedbackId = '';
+
+  function openReplyModal(feedbackId, username, comment) {
+    replyFeedbackId = feedbackId;
+    document.getElementById('replyModalText').textContent = `Replying to ${username}: "${comment}"`;
+    document.getElementById('replyText').value = '';
+    document.getElementById('replyModal').classList.add('active');
+  }
+  function closeReplyModal() { document.getElementById('replyModal').classList.remove('active'); }
+
+  function confirmReply() {
+    const text = document.getElementById('replyText').value.trim();
+    if (!text) { alert('Please type a reply.'); return; }
+    closeReplyModal();
+
+    const formData = new URLSearchParams();
+    formData.append('action', 'reply');
+    formData.append('feedbackId', replyFeedbackId);
+    formData.append('replyText', text);
+
+    fetch('feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString()
+    })
+            .then(res => res.json())
+            .then(data => {
+              if (data.status === 'replied') loadFeedback();
+            });
+  }
+</script>
+
+</body>
+</html>

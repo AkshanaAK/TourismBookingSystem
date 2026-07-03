@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Travel World</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .profile-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(6px);
+        }
+        .nav-logo { font-size: 1.2rem; font-weight: bold; color: white; text-shadow: 0 1px 4px rgba(0,0,0,0.4); letter-spacing: 1px; }
+        .nav-buttons { display: flex; gap: 10px; align-items: center; }
+        .nav-btn {
+            padding: 8px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-family: Arial; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; display: inline-block; margin-top: 0; width: auto; transition: background 0.2s;
+        }
+        .nav-btn-outline { background: rgba(255,255,255,0.25); color: white; border: 1.5px solid rgba(255,255,255,0.6); }
+        .nav-btn-outline:hover { background: rgba(255,255,255,0.4); }
+        /* FIX 4: Red logout button */
+        .nav-btn-logout { background: rgba(220,53,69,0.75); color: white; border: 1.5px solid rgba(220,53,69,0.9); }
+        .nav-btn-logout:hover { background: rgba(220,53,69,1); }
+        /* FIX 2: increased padding so content clears nav */
+        .profile-wrapper {
+            min-height: 100vh;
+            padding: 120px 20px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+        .msg {
+            display: none; width: 100%; max-width: 560px;
+            padding: 12px 16px; border-radius: 10px;
+            text-align: center; font-weight: bold; font-size: 0.9rem;
+        }
+        .msg-success { background: rgba(212,237,218,0.95); color: #155724; border: 1px solid #c3e6cb; }
+        .msg-error   { background: rgba(248,215,218,0.95); color: #721c24; border: 1px solid #f5c6cb; }
+        .profile-card {
+            width: 100%; max-width: 560px;
+            background: rgba(255,255,255,0.88);
+            border-radius: 20px;
+            box-shadow: 0px 0px 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .profile-header { background: #185FA5; padding: 28px 24px; text-align: center; color: white; }
+        .profile-avatar-large {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            border: 3px solid rgba(255,255,255,0.6);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: bold;
+            margin: 0 auto 12px; color: white;
+        }
+        .profile-header h2 { font-size: 1.2rem; margin-bottom: 4px; }
+        .profile-header p  { font-size: 0.82rem; opacity: 0.85; }
+        .role-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 3px 12px; border-radius: 999px;
+            font-size: 0.75rem; margin-top: 6px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .profile-details { padding: 20px 24px; }
+        .detail-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.88rem;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #888; font-weight: 600; min-width: 110px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .detail-value { color: #1a1a2e; font-weight: 500; text-align: right; }
+        .section-toggle {
+            width: 100%; max-width: 560px;
+            background: rgba(255,255,255,0.88);
+            border-radius: 16px;
+            box-shadow: 0px 0px 14px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        .toggle-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; cursor: pointer; background: transparent;
+            border: none; width: 100%; font-family: Arial; font-size: 0.95rem;
+            font-weight: bold; color: #185FA5; transition: background 0.2s; margin-top: 0;
+        }
+        .toggle-header:hover { background: rgba(24,95,165,0.05); }
+        .toggle-icon { font-size: 1.1rem; transition: transform 0.3s; }
+        .toggle-icon.open { transform: rotate(180deg); }
+        .toggle-body { display: none; padding: 0 24px 20px; }
+        .toggle-body.open { display: block; }
+        .edit-form { display: flex; flex-direction: column; gap: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-group input {
+            padding: 10px 12px; border: 1.5px solid #ddd;
+            border-radius: 8px; font-family: Arial; font-size: 0.9rem;
+            width: 100%; box-sizing: border-box; transition: border-color 0.2s;
+        }
+        .form-group input:focus { outline: none; border-color: #185FA5; }
+        .divider { height: 1px; background: #eee; margin: 4px 0; }
+        .section-subtitle { font-size: 0.78rem; color: #999; margin-bottom: 4px; }
+        .submit-btn {
+            width: 100%; padding: 12px; background: #185FA5; color: white;
+            border: none; border-radius: 10px; cursor: pointer;
+            font-family: Arial; font-size: 0.95rem; font-weight: bold;
+            margin-top: 4px; transition: background 0.2s;
+        }
+        .submit-btn:hover { background: #0C447C; }
+        .bookings-table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        th { background: #185FA5; color: white; padding: 9px 8px; text-align: left; white-space: nowrap; }
+        td { padding: 8px 8px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; }
+        tr:hover td { background: #f0f6ff; }
+        .no-bookings { text-align: center; color: #999; padding: 20px; font-size: 0.88rem; }
+
+        .status-badge {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+
+        /* WIDER SECTION for My Bookings so Actions column never hides */
+        .section-toggle-wide { max-width: 900px; }
+        .section-toggle-wide td,
+        .section-toggle-wide th { padding: 8px 10px; }
+        .section-toggle-wide .action-btn {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+        .action-btn {
+            padding: 5px 10px; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 0.78rem; font-family: Arial;
+            font-weight: bold; margin-top: 0; width: auto; margin-right: 4px;
+        }
+        .edit-btn   { background: #185FA5; color: white; }
+        .edit-btn:hover { background: #0C447C; }
+        .cancel-btn { background: #dc3545; color: white; }
+        .cancel-btn:hover { background: #b02a37; }
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.5); z-index: 200;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: 16px; padding: 28px;
+            max-width: 380px; width: 90%; text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .modal h3 { color: #dc3545; margin-bottom: 8px; }
+        .modal p  { color: #555; font-size: 0.88rem; margin-bottom: 20px; }
+        .modal-btns { display: flex; gap: 10px; }
+        .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-family: Arial; font-weight: bold; font-size: 0.9rem; margin-top: 0; }
+        .modal-confirm-cancel { background: #dc3545; color: white; }
+        .modal-confirm-cancel:hover { background: #b02a37; }
+        .modal-keep { background: #f0f0f0; color: #333; }
+        .modal-keep:hover { background: #ddd; }
+        .edit-modal-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; text-align: left; }
+        .edit-modal-form label { font-size: 0.78rem; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px; }
+        .edit-modal-form select,
+        .edit-modal-form input {
+            width: 100%; padding: 9px 12px; border: 1.5px solid #ddd;
+            border-radius: 8px; font-family: Arial; font-size: 0.9rem; box-sizing: border-box;
+        }
+        .modal-save { background: #185FA5; color: white; }
+        .modal-save:hover { background: #0C447C; }
+        .back-btn {
+            width: 100%; max-width: 560px; padding: 12px;
+            background: rgba(255,255,255,0.25); color: white;
+            border: 1.5px solid rgba(255,255,255,0.6); border-radius: 10px;
+            cursor: pointer; font-family: Arial; font-size: 0.9rem;
+            font-weight: bold; text-align: center; transition: background 0.2s; margin-top: 0;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.4); }
+    </style>
+</head>
+<body>
+
+<nav class="profile-nav">
+    <div class="nav-logo">✈ Travel World</div>
+    <div class="nav-buttons">
+        <button class="nav-btn nav-btn-outline" onclick="goBack()">← Back</button>
+        <button class="nav-btn nav-btn-outline" onclick="goToDashboard()">Dashboard</button>
+        <!-- FIX 4: red logout button + logout() function -->
+        <button class="nav-btn nav-btn-logout" onclick="logout()">Logout</button>
+    </div>
+</nav>
+
+<!-- CANCEL MODAL -->
+<div class="modal-overlay" id="cancelModal">
+    <div class="modal">
+        <h3>Cancel Booking?</h3>
+        <p id="cancelModalText">Are you sure you want to cancel this booking? This cannot be undone.</p>
+        <div class="modal-btns">
+            <button class="modal-btn modal-keep" onclick="closeCancelModal()">Keep Booking</button>
+            <button class="modal-btn modal-confirm-cancel" onclick="confirmCancel()">Yes, Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- EDIT BOOKING MODAL -->
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <h3 style="color:#185FA5; margin-bottom:8px;">✏️ Update Booking</h3>
+        <p style="color:#555; font-size:0.88rem; margin-bottom:12px;" id="editModalTitle"></p>
+        <div class="edit-modal-form">
+            <div>
+                <label>Price (USD)</label>
+                <input type="number" id="editPrice" min="1" placeholder="e.g. 899">
+            </div>
+            <div>
+                <label>Accommodation</label>
+                <select id="editAccommodation">
+                    <option value="Hotel">Hotel</option>
+                    <option value="Resort">Resort</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Hostel">Hostel</option>
+                    <option value="Camping">Camping</option>
+                </select>
+            </div>
+            <div>
+                <label>Number of Days</label>
+                <input type="number" id="editDays" min="1" placeholder="e.g. 7">
+            </div>
+        </div>
+        <div class="modal-btns">
+            <button class="modal-btn modal-keep" onclick="closeEditModal()">Cancel</button>
+            <button class="modal-btn modal-save" onclick="confirmUpdate()">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<div class="profile-wrapper">
+
+    <!-- FIX 2: messages now visible, auto-hide after 3s -->
+    <div class="msg msg-success" id="successMsg">✅ Profile updated successfully!</div>
+    <div class="msg msg-error"   id="errorMsg">❌ Incorrect username or password.</div>
+    <div class="msg msg-success" id="bookingUpdateMsg">✅ Booking updated successfully!</div>
+    <div class="msg" id="bookingCancelMsg" style="background:rgba(248,215,218,0.95);color:#721c24;border:1px solid #f5c6cb;">🗑️ Booking cancelled successfully.</div>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar-large" id="avatarLarge">TW</div>
+            <h2 id="profileFullName">Loading...</h2>
+            <p id="profileEmail">...</p>
+            <div class="role-badge" id="profileRole">customer</div>
+        </div>
+        <div class="profile-details">
+            <div class="detail-row"><span class="detail-label">User ID</span><span class="detail-value" id="detailUserId">—</span></div>
+            <div class="detail-row"><span class="detail-label">Username</span><span class="detail-value" id="detailUsername">—</span></div>
+            <div class="detail-row"><span class="detail-label">Title</span><span class="detail-value" id="detailTitle">—</span></div>
+            <div class="detail-row"><span class="detail-label">Country</span><span class="detail-value" id="detailCountry">—</span></div>
+            <div class="detail-row"><span class="detail-label">Mobile</span><span class="detail-value" id="detailMobile">—</span></div>
+        </div>
+    </div>
+
+    <!-- My Bookings - wide table with Status column -->
+    <div class="section-toggle section-toggle-wide">
+        <button class="toggle-header" onclick="toggleSection('bookingsSection', this)">
+            📋 My Bookings <span class="toggle-icon">▼</span>
+        </button>
+        <div class="toggle-body" id="bookingsSection">
+            <div class="bookings-table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Booking ID</th><th>Package</th><th>Destination</th>
+                        <th>Price</th><th>Accommodation</th><th>Days</th>
+                        <th>Date</th><th>Status</th><th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                    <tr><td colspan="9" class="no-bookings">Click to load bookings.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Username/Password -->
+    <div class="section-toggle">
+        <button class="toggle-header" onclick="toggleSection('editSection', this)">
+            ✏️ Edit Username / Password <span class="toggle-icon">▼</span>
+        </button>
+        <div class="toggle-body" id="editSection">
+            <form class="edit-form" action="profile" method="post">
+                <p class="section-subtitle">🔒 Verify your identity first</p>
+                <div class="form-group">
+                    <label>Current Username</label>
+                    <input type="text" name="currentUsername" id="currentUsernameInput" required>
+                </div>
+                <div class="form-group">
+                    <label>Current Password</label>
+                    <input type="password" name="currentPassword" required>
+                </div>
+                <div class="divider"></div>
+                <p class="section-subtitle">✏️ Enter new values (leave blank to keep current)</p>
+                <div class="form-group">
+                    <label>New Username</label>
+                    <input type="text" name="newUsername" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" name="newPassword" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Repeat new password">
+                </div>
+                <button type="submit" class="submit-btn" onclick="return validateForm()">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <button class="back-btn" onclick="goBack()">← Go Back</button>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    const params          = new URLSearchParams(window.location.search);
+    const status          = params.get('status');
+    const usernameFromUrl = params.get('username');
+
+    if (usernameFromUrl) sessionStorage.setItem('username', usernameFromUrl);
+
+    const username = sessionStorage.getItem('username') || '';
+
+    // FIX 2: show success msg and auto-hide after 3s
+    if (status === 'updated') {
+        const m = document.getElementById('successMsg');
+        m.style.display = 'block';
+        setTimeout(() => m.style.display = 'none', 3000);
+    }
+    // FIX 1: wrong credentials shows alert popup
+    if (status === 'wrongCredentials') {
+        alert('❌ Wrong current username or password! Please try again.');
+        document.getElementById('editSection').classList.add('open');
+        document.querySelectorAll('.toggle-icon')[1].classList.add('open');
+    }
+
+    if (username) document.getElementById('currentUsernameInput').value = username;
+
+    if (username) {
+        fetch('profile?username=' + encodeURIComponent(username))
+            .then(res => res.json())
+            .then(user => {
+                if (user.error) return;
+                document.getElementById('avatarLarge').textContent =
+                    (user.firstName.charAt(0) + user.lastName.charAt(0)).toUpperCase();
+                document.getElementById('profileFullName').textContent =
+                    user.title + ' ' + user.firstName + ' ' + user.lastName;
+                document.getElementById('profileEmail').textContent   = user.email;
+                document.getElementById('profileRole').textContent    = user.role;
+                document.getElementById('detailUserId').textContent   = user.userId;
+                document.getElementById('detailUsername').textContent = user.username;
+                document.getElementById('detailTitle').textContent    = user.title;
+                document.getElementById('detailCountry').textContent  = user.country;
+                document.getElementById('detailMobile').textContent   = user.mobile;
+            });
+    }
+
+    function loadBookings() {
+        const uid = sessionStorage.getItem('userId') || '';
+        if (!uid) {
+            document.getElementById('bookingsTableBody').innerHTML =
+                '<tr><td colspan="9" class="no-bookings">Could not load bookings — please log in again.</td></tr>';
+            return;
+        }
+        fetch('bookings?userId=' + encodeURIComponent(uid))
+            .then(res => res.json())
+            .then(bookings => {
+                const tbody = document.getElementById('bookingsTableBody');
+                if (bookings.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="no-bookings">No bookings yet. Go explore! ✈️</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = '';
+                bookings.forEach(b => {
+                    const isCancelled = b.status === 'Cancelled';
+                    const statusBadge = isCancelled
+                        ? '<span class="status-badge status-cancelled">Cancelled</span>'
+                        : '<span class="status-badge status-confirmed">Confirmed</span>';
+                    const actions = isCancelled
+                        ? '<em style="color:#999; font-size:0.78rem;">No actions</em>'
+                        : `<button class="action-btn edit-btn"
+                                onclick="openEditModal('${b.bookingId}','${b.packageName}','${b.price}','${b.accommodation}','${b.days}')">Edit</button>
+                           <button class="action-btn cancel-btn"
+                                onclick="openCancelModal('${b.bookingId}','${b.packageName}')">Cancel</button>`;
+
+                    tbody.innerHTML += `
+                        <tr id="row-${b.bookingId}">
+                            <td>${b.bookingId}</td>
+                            <td>${b.packageName}</td>
+                            <td>${b.destination}</td>
+                            <td>$${b.price}</td>
+                            <td>${b.accommodation}</td>
+                            <td>${b.days}</td>
+                            <td>${b.dateTime}</td>
+                            <td>${statusBadge}</td>
+                            <td>${actions}</td>
+                        </tr>`;
+                });
+            })
+            .catch(() => {
+                document.getElementById('bookingsTableBody').innerHTML =
+                    '<tr><td colspan="9" class="no-bookings">Could not load bookings.</td></tr>';
+            });
+    }
+
+    function toggleSection(sectionId, btn) {
+        const body = document.getElementById(sectionId);
+        const icon = btn.querySelector('.toggle-icon');
+        body.classList.toggle('open');
+        icon.classList.toggle('open');
+        if (sectionId === 'bookingsSection' && body.classList.contains('open')) loadBookings();
+    }
+
+    let cancelBookingId = '';
+    function openCancelModal(bookingId, packageName) {
+        cancelBookingId = bookingId;
+        document.getElementById('cancelModalText').textContent =
+            `Are you sure you want to cancel your booking for "${packageName}"? This cannot be undone.`;
+        document.getElementById('cancelModal').classList.add('active');
+    }
+    function closeCancelModal() { document.getElementById('cancelModal').classList.remove('active'); }
+    function confirmCancel() {
+        closeCancelModal();
+        fetch('bookings?bookingId=' + cancelBookingId, { method: 'DELETE' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'cancelled') {
+                    document.getElementById('row-' + cancelBookingId).remove();
+                    const m = document.getElementById('bookingCancelMsg');
+                    m.style.display = 'block';
+                    setTimeout(() => m.style.display = 'none', 3000);
+                }
+            });
+    }
+
+    let editBookingId = '';
+    function openEditModal(bookingId, packageName, price, accommodation, days) {
+        editBookingId = bookingId;
+        document.getElementById('editModalTitle').textContent = 'Package: ' + packageName;
+        document.getElementById('editPrice').value = price;
+        document.getElementById('editAccommodation').value = accommodation;
+        document.getElementById('editDays').value = days;
+        document.getElementById('editModal').classList.add('active');
+    }
+    function closeEditModal() { document.getElementById('editModal').classList.remove('active'); }
+    function confirmUpdate() {
+        const price         = document.getElementById('editPrice').value;
+        const accommodation = document.getElementById('editAccommodation').value;
+        const days          = document.getElementById('editDays').value;
+        if (!price || !days) { alert('Please fill in all fields.'); return; }
+        closeEditModal();
+        fetch(`bookings?bookingId=${editBookingId}&price=${price}&accommodation=${encodeURIComponent(accommodation)}&days=${days}`, { method: 'PUT' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'updated') {
+                    const m = document.getElementById('bookingUpdateMsg');
+                    m.style.display = 'block';
+                    setTimeout(() => m.style.display = 'none', 3000);
+                    loadBookings();
+                }
+            });
+    }
+
+    function validateForm() {
+        const newPwd     = document.querySelector('input[name="newPassword"]').value;
+        const confirmPwd = document.getElementById('confirmPassword').value;
+        if (newPwd && newPwd !== confirmPwd) { alert('New passwords do not match!'); return false; }
+        return true;
+    }
+
+    function goToDashboard() {
+        window.location.href = sessionStorage.getItem('role') === 'admin'
+            ? 'admin-dashboard.html' : 'customer-dashboard.html';
+    }
+    function goBack() { window.history.back(); }
+    // FIX 4: logout clears session and redirects
+    function logout() {
+        sessionStorage.clear();
+        window.location.href = 'role-selection.html';
+    }
+</script>
+</body>
+</html>

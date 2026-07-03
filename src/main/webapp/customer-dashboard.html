@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Dashboard - Travel World</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .dashboard-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(6px);
+        }
+
+        .nav-logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+        }
+
+        .nav-buttons { display: flex; gap: 10px; align-items: center; }
+
+        .nav-btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: Arial;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0;
+            width: auto;
+        }
+
+        .nav-btn-outline {
+            background: rgba(255,255,255,0.25);
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.6);
+        }
+
+        .nav-btn-outline:hover { background: rgba(255,255,255,0.4); }
+        .nav-btn-profile { background: rgba(255,255,255,0.85); color: #333; }
+        .nav-btn-profile:hover { background: white; }
+
+        .avatar {
+            display: inline-block;
+            width: 24px; height: 24px;
+            border-radius: 50%;
+            background: #185FA5;
+            color: white;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 4px;
+        }
+
+        .dashboard-wrapper {
+            min-height: 100vh;
+            padding: 130px 24px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .msg {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .msg-success {
+            background: rgba(212,237,218,0.92);
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .msg-error {
+            background: rgba(248,215,218,0.92);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .section-header {
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 20px;
+        }
+
+        .section-header h2 {
+            color: white;
+            font-size: 1.6rem;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .section-header p {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.9rem;
+        }
+
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .package-card {
+            background: rgba(255,255,255,0.88);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .package-card h3 { color: #0C447C; font-size: 1.05rem; margin: 0; }
+        .package-destination { color: #185FA5; font-size: 0.85rem; font-weight: bold; }
+        .package-meta { display: flex; gap: 10px; font-size: 0.82rem; color: #555; }
+        .package-price { font-size: 1.2rem; font-weight: bold; color: #185FA5; }
+        .package-desc { font-size: 0.82rem; color: #666; line-height: 1.5; flex: 1; }
+        .package-id-tag { font-size: 0.72rem; color: #999; }
+
+        .book-btn {
+            width: 100%;
+            padding: 10px;
+            background: #185FA5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: Arial;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 6px;
+            transition: background 0.2s;
+        }
+
+        .book-btn:hover { background: #0C447C; }
+
+        .no-packages {
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.4);
+            padding: 40px;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .modal h3 { color: #0C447C; margin-bottom: 6px; }
+        .modal p  { color: #555; font-size: 0.88rem; margin-bottom: 16px; }
+
+        .modal-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+
+        .modal-form label {
+            font-size: 0.78rem;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .modal-form select,
+        .modal-form input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            font-family: Arial;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        .modal-btns { display: flex; gap: 10px; }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: Arial;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 0;
+        }
+
+        .modal-confirm { background: #185FA5; color: white; }
+        .modal-confirm:hover { background: #0C447C; }
+        .modal-cancel  { background: #f0f0f0; color: #333; }
+        .modal-cancel:hover { background: #ddd; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="dashboard-nav">
+    <div class="nav-logo">✈ Travel World</div>
+    <div class="nav-buttons">
+        <a href="home.html" class="nav-btn nav-btn-outline">Home</a>
+        <a href="feedback.html" class="nav-btn nav-btn-outline">Feedback</a>
+        <a href="Profile.html" class="nav-btn nav-btn-profile">
+            <span class="avatar" id="avatarInitials">TW</span>
+            <span id="navUsername">Profile</span>
+        </a>
+    </div>
+</nav>
+
+<!-- BOOKING MODAL -->
+<div class="modal-overlay" id="bookingModal">
+    <div class="modal">
+        <h3>Confirm Booking</h3>
+        <p id="modalText">Fill in your booking details below.</p>
+        <div class="modal-form">
+            <div>
+                <label>Accommodation</label>
+                <select id="modalAccommodation">
+                    <option value="Hotel">Hotel</option>
+                    <option value="Resort">Resort</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Hostel">Hostel</option>
+                    <option value="Camping">Camping</option>
+                </select>
+            </div>
+            <div>
+                <label>Number of Days</label>
+                <input type="number" id="modalDays" min="1" max="365" value="7" placeholder="e.g. 7">
+            </div>
+        </div>
+        <div class="modal-btns">
+            <button class="modal-btn modal-cancel" onclick="closeModal()">Cancel</button>
+            <button class="modal-btn modal-confirm" onclick="confirmBooking()">Book Now</button>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="dashboard-wrapper">
+
+    <div class="msg msg-success" id="successMsg">
+        ✅ Booking confirmed! Your Booking ID: <strong id="bookingIdDisplay"></strong>
+    </div>
+    <div class="msg msg-error" id="errorMsg">
+        ❌ Booking failed. Please try again.
+    </div>
+
+    <div class="section-header">
+        <h2>🌍 Available Travel Packages</h2>
+        <p>Choose a package and start your adventure!</p>
+    </div>
+
+    <div class="packages-grid" id="packagesGrid">
+        <div class="no-packages">Loading packages...</div>
+    </div>
+
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    const params   = new URLSearchParams(window.location.search);
+    const username = params.get('username') || sessionStorage.getItem('username') || 'Traveller';
+    const userId   = params.get('userId')   || sessionStorage.getItem('userId')   || '';
+
+    if (username) {
+        sessionStorage.setItem('username', username);
+        document.getElementById('navUsername').textContent = username;
+        document.getElementById('avatarInitials').textContent = username.substring(0,2).toUpperCase();
+    }
+    if (userId) sessionStorage.setItem('userId', userId);
+
+    if (params.get('status') === 'booked') {
+        document.getElementById('bookingIdDisplay').textContent = params.get('bookingId');
+        document.getElementById('successMsg').style.display = 'block';
+    }
+    if (params.get('status') === 'bookingFailed') {
+        document.getElementById('errorMsg').style.display = 'block';
+    }
+
+    let selectedPackageId   = '';
+    let selectedPackageName = '';
+
+    // Load packages
+    fetch('packages')
+        .then(res => res.json())
+        .then(packages => {
+            const grid = document.getElementById('packagesGrid');
+            if (packages.length === 0) {
+                grid.innerHTML = '<div class="no-packages">No packages available yet. Check back soon!</div>';
+                return;
+            }
+            grid.innerHTML = '';
+            packages.forEach(pkg => {
+                const card = document.createElement('div');
+                card.className = 'package-card';
+                card.innerHTML = `
+                    <div class="package-id-tag">ID: ${pkg.packageId}</div>
+                    <h3>${pkg.packageName}</h3>
+                    <div class="package-destination">📍 ${pkg.destination}</div>
+                    <div class="package-meta"><span>⏱ ${pkg.duration}</span></div>
+                    <div class="package-price">$${pkg.price}</div>
+                    <div class="package-desc">${pkg.description}</div>
+                    <button class="book-btn" onclick="openModal('${pkg.packageId}', '${pkg.packageName}')">
+                        Book Now
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        })
+        .catch(() => {
+            document.getElementById('packagesGrid').innerHTML =
+                '<div class="no-packages">Could not load packages. Please try again.</div>';
+        });
+
+    function openModal(packageId, packageName) {
+        selectedPackageId   = packageId;
+        selectedPackageName = packageName;
+        document.getElementById('modalText').textContent = `Booking: "${packageName}"`;
+        document.getElementById('bookingModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('bookingModal').classList.remove('active');
+    }
+
+    function confirmBooking() {
+        const uid           = sessionStorage.getItem('userId') || '';
+        const accommodation = document.getElementById('modalAccommodation').value;
+        const days          = document.getElementById('modalDays').value;
+
+        if (!days || days < 1) {
+            alert('Please enter a valid number of days.');
+            return;
+        }
+
+        closeModal();
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'bookings';
+
+        const fields = {
+            packageId: selectedPackageId,
+            userId: uid,
+            accommodation: accommodation,
+            days: days
+        };
+
+        for (const [name, value] of Object.entries(fields)) {
+            const input = document.createElement('input');
+            input.name  = name;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+</script>
+
+</body>
+</html>
